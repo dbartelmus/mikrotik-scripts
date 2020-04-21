@@ -1,23 +1,18 @@
-# this is decent backup script
-# once executed, it creates device configuration backup file, then sends email, then delete backup, then log action
-# you need to configure SMTP to properly send emails - "Tools" -> "email"
-# enjoy, feel free to update/modify
-
-/log info message="backup script started";
-:local date "$[/system clock get date]";
-:local subject "MikroTik $[/system identity get name] Config Backup"; 
-:local filename ""; 
-:for i from=0 to=([:len $date] - 1) do={
-:local char [:pick $date $i];
-:if ($char = "/") do={
-:set $char "-";
-}
-:set filename ($filename.$char);
-}
-/system backup save name=$filename;
-:delay 5s;
+ /log info message="backup script started";
+ :local date "$[/system clock get date]";
+ :local subject "MikroTik $[/system identity get name] Config Backup"; 
+ :local filename ""; 
+ :for i from=0 to=([:len $date] - 1) do={
+ :local char [:pick $date $i];
+ :if ($char = "/") do={
+ :set $char "-";
+ }
+ :set filename ($filename.$char);
+ }
+ /system backup save name=$filename;
+ :delay 5s;
 :set filename ($filename.".backup");
-/tool e-mail send file="flash/$filename" to="panthersoftware.archive@gmail.com" subject="$subject";
-:delay 5s;
-/file remove "flash/$filename";
-/log info message="backup script finished";
+ /tool e-mail send file="$filename" to="your-email@domain.com" subject="$subject";
+ :delay 5s;
+ /file remove "$filename";
+ /log info message="backup script finished";
